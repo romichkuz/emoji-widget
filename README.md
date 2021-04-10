@@ -1,5 +1,4 @@
 # emoji-widget
-a simple emoji widget for a project purpose
 Кузьмин Роман romichkuz
 Гильмутдинов Даниил fregire
 Трифонов Лев lev_3fon
