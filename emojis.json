@@ -1,0 +1,34 @@
+{
+  "emojis": [
+    {
+      "name": ":grinning:",
+      "category": "people",
+      "content": "&#128512;"
+    },
+    {
+      "name": ":smiley:",
+      "category": "people",
+      "content": "&#128515;"
+    },
+    {
+      "name": ":smile:",
+      "category": "people",
+      "content": "&#128516;"
+    },
+    {
+      "name": ":grin:",
+      "category": "people",
+      "content": "&#128513;"
+    },
+    {
+      "name": ":laughing::satisfied:",
+      "category": "people",
+      "content": "&#128518;"
+    },
+    {
+      "name": ":sweat_smile:",
+      "category": "people",
+      "content": "&#128517;"
+    }
+  ]
+}
