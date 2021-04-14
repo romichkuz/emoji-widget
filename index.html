@@ -19,14 +19,17 @@
 
 	<div class="emoji-widget">
 		<div class="emoji-widget__header">
-			<input type="text" class="emoji-widget__search-bar">
+			<div class="emoji-widget__search-bar">
+				<input type="text" class="emoji-widget__search-input" placeholder="Найдите крутой эмодзи">
+			</div>
+		</div>
+		<div class="emoji-widget__content">
 			<div class="emoji-widget__tabs">
 				<div class="emoji-widget__tab"></div>
 				<div class="emoji-widget__tab"></div>
 				<div class="emoji-widget__tab"></div>
 			</div>
-		</div>
-		<div class="emoji-widget__content">
+
 			<ul class="emoji-widget__results">
 				<li class="emoji-widget__result" data-name=":tiger:">
 					&#129313;
@@ -38,6 +41,10 @@
 					&#128521
 				</li>
 			</ul>
+		</div>
+		<div class="emoji-widget__footer">
+			<div class="emoji-widget__current-smile">&#129313;</div>
+			<div class="emoji-widget__current-smile-name">:name::anothername</div>
 		</div>
 	</div>
 </body>
