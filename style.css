@@ -38,6 +38,7 @@ h1 {
     width: 400px;
     height: 400px; 
     background: #2F3136;
+    border-radius: 10px;
 }
 
 .emoji-widget__header {
@@ -59,12 +60,11 @@ h1 {
     width: 100%;
     height: 44px;
     padding: 0 8px;
-    background-repeat: 5px; 
     border-radius: 5px;
-    background: #202225;
+    background: #202225 5px;
 
     color: #6D7178;
-    font-family: Roboto;
+    font-family: Roboto, serif;
     font-style: normal;
     font-weight: normal;
     font-size: 16px;
@@ -115,7 +115,7 @@ h1 {
 }
 
 .emoji-widget__current-smile-name {
-    font-family: Roboto;
+    font-family: Roboto, serif;
     font-style: normal;
     font-weight: normal;
     font-size: 20px;
@@ -130,4 +130,5 @@ h1 {
     padding: 15px 25px;
     justify-self: flex-end;
     width: 100%;
+    border-radius: 0 0 10px 10px;
 }
