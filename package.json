@@ -1,0 +1,23 @@
+{
+  "name": "emoji-widget",
+  "version": "1.0.0",
+  "description": "Задача сделать встраиваемый на другие сайты инструмент для выбора эмоджи.\r Кузьмин Роман romichkuz\r Гильмутдинов Даниил fregire\r Трифонов Лев lev_3fon\r Бабарыкина Дарья dary-bory",
+  "main": "app.js",
+  "dependencies": {},
+  "devDependencies": {
+    "express": "^4.17.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/romichkuz/emoji-widget.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/romichkuz/emoji-widget/issues"
+  },
+  "homepage": "https://github.com/romichkuz/emoji-widget#readme"
+}
