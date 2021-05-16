@@ -8,10 +8,10 @@
 </head>
 <body>
 	<h1>Emoji widget</h1>
-	<form>
+	<form onsubmit="searchQuery();" id="searchForm">
 		<div class="chat">
 			<label>
-				<input>
+				<input id="search-input">
 			</label>
 			<button id="smileLogo"><img class="smileLogo" src="images/580b57fcd9996e24bc43c4b2.png" alt="grin"></button>
 		</div>
@@ -58,14 +58,20 @@
 	</div>
 
 	<script>
-		let xhr = new XMLHttpRequest();
-		let inputValue = "smile";
-		xhr.open("GET", "http://127.0.0.1:3000/get_emojies?" + "q=" + inputValue);
-		xhr.onload = function(){
-			let smiles = xhr.response;
-			alert(xhr.response);
-		};
-		xhr.send();
+		let input = document.querySelector('#search-input');
+		let searchForm = document.querySelector('#searchForm');
+		searchForm.onsubmit = function(e){
+			e.preventDefault();
+			let xhr = new XMLHttpRequest();
+			console.log(input)
+			let inputValue = input.value;
+			xhr.open("GET", "http://127.0.0.1:3000/get_emojies?" + "q=" + inputValue);
+			xhr.onload = function(){
+				let smiles = xhr.response;
+				alert(xhr.response);
+			};
+			xhr.send();
+		}
 	</script>
 </body>
 </html>

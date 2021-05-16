@@ -6,6 +6,7 @@ const uri = "mongodb+srv://mongo:mongo@emojisdb.6iax4.mongodb.net/emojisdb?retry
 const mongoClient = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 const fs = require('fs');
 let dbClient;
+let collection;
 
 app.get('/', (req, res) => {
   res.send('Hello World!')
@@ -13,8 +14,10 @@ app.get('/', (req, res) => {
 
 mongoClient.connect(function(err, client){
     if(err) return console.log(err);
-    let collection = client.db("emojisdb").collection("emojis");
-    collection.find({}, (err, res) => {
+    dbClient = client.db("emojisdb");
+    collection = client.db("emojisdb").collection("emojis");
+
+    collection.find({ $text: { $search: "clown" }}, (err, res) => {
     	res.toArray().then((res) => {
     		console.log(res);
     	});
@@ -30,13 +33,20 @@ app.get('/get_emojies', (req, res) => {
 	res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE'); // If needed
 	res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type'); // If needed
 	res.setHeader('Access-Control-Allow-Credentials', true); // If needed
-	console.log(req.query);
+	collection.find({ $text: { $search: req.query.q }}, (err, res) => {
+    	res.toArray().then((res) => {
+    		console.log(res);
+    	});
+    });
 
 	res.send("New");
 });
 
 
 
+function initEmojisDB(db){
+	db.collection('emojis').createIndex( {name: "text", description: "text"} );
+}
 
 function loadEmojiesToDB(collection){
 	let emojis = [];
