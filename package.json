@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "Задача сделать встраиваемый на другие сайты инструмент для выбора эмоджи.\r Кузьмин Роман romichkuz\r Гильмутдинов Даниил fregire\r Трифонов Лев lev_3fon\r Бабарыкина Дарья dary-bory",
   "main": "app.js",
-  "dependencies": {},
+  "dependencies": {
+    "mongodb": "^3.6.6"
+  },
   "devDependencies": {
     "express": "^4.17.1"
   },
