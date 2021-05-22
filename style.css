@@ -73,11 +73,20 @@ h1 {
     outline: none;
     border: none;
 }
-.emoji-widget__search-input-icon {
+
+.emoji-widget__search-btn {
+    border: 0;
+    outline: none;
     position: absolute;
     right: 8px;
     top: 50%;
     transform: translate(0, -50%);
+    background: transparent;
+    height: 20px;
+}
+
+.emoji-widget__search-btn:hover {
+    cursor: pointer;
 }
 
 .emoji-widget__tabs {

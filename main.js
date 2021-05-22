@@ -1,28 +1,32 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Document</title>
-	<link rel="stylesheet" href="style.css">
-</head>
-<body>
-	<h1>Emoji widget</h1>
-	<form onsubmit="searchQuery();" id="searchForm">
-		<div class="chat">
-			<label>
-				<input id="search-input">
-				<button 
-					style="padding: 0;
-							background: transparent;
-							outline: none;
-							border: 0; "><span>☺</span></button>
-			</label>
-			<button id="smileLogo"><img class="smileLogo" src="images/580b57fcd9996e24bc43c4b2.png" alt="grin"></button>
-		</div>
-	</form>
-	<input type="text" class="test-input">
-	<!-- <div class="emoji-widget">
+function getID(length){
+	let result = [];
+    let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let charactersLength = characters.length;
+    for ( let i = 0; i < length; i++ ) {
+		result.push(characters.charAt(Math.floor(Math.random() * 
+	charactersLength)));
+	}
+
+   return result.join('');
+}
+
+function getUniqueID(){
+	let id = getID(10);
+	while (document.getElementById(id)){
+		id = getID(10);
+	}
+	return id;
+}
+
+function htmlToDOM(html){
+	let div = document.createElement('div');
+	div.innerHTML = html.trim();
+
+	return div.firstChild;
+}
+
+function createDOMWidget(){
+	return htmlToDOM(`<div class="emoji-widget">
 		<form class="emoji-widget__header">
 			<label class="emoji-widget__search-bar">
 				<input type="text" class="emoji-widget__search-input" placeholder="Найдите крутой эмодзи">
@@ -62,24 +66,22 @@
 			<div class="emoji-widget__current-smile">&#129313;</div>
 			<div class="emoji-widget__current-smile-name">:name::anothername</div>
 		</div>
-	</div>
- -->
-	<script>
-		let input = document.querySelector('#search-input');
-		let searchForm = document.querySelector('#searchForm');
-		searchForm.onsubmit = function(e){
-			e.preventDefault();
-			let xhr = new XMLHttpRequest();
-			console.log(input)
-			let inputValue = input.value;
-			xhr.open("GET", "http://127.0.0.1:3000/get_emojies?" + "q=" + inputValue);
-			xhr.onload = function(){
-				let smiles = xhr.response;
-				alert(xhr.response);
-			};
-			xhr.send();
-		}
-	</script>
-	<script src="main.js"></script>
-</body>
-</html>
+	</div>`);
+}
+
+function createWidgetStyles(){
+	return htmlToDOM(`<style>`);
+}
+
+
+
+function createWidget(inputDOM){
+	let widget = createDOMWidget();
+	let uniqueID = getUniqueID();
+	inputDOM.setAttribute("data-id", uniqueID);
+	widget.setAttribute("id", uniqueID);
+	inputDOM.after(widget);
+}
+
+let a = document.querySelector('.test-input');
+createWidget(a);
