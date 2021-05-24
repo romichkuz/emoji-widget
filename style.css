@@ -41,6 +41,10 @@ h1 {
     border-radius: 10px;
 }
 
+.emoji-widget--hidden {
+    display: none;
+}
+
 .emoji-widget__header {
     padding-top: 25px;
     padding-bottom: 25px;

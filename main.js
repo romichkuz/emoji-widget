@@ -91,7 +91,8 @@ function createAppearBtn(){
 }
 
 
-function getRelativeCoords(elem){
+// TODO Rename methods according to input
+function getRelativeCoordsToFirstNonStaticParent(elem){
 	let elCoords = elem.getBoundingClientRect();
 	let parent = elem.parentElement;
 
@@ -111,7 +112,7 @@ function getRelativeCoords(elem){
 }
 
 function initAppearBtnPosition(input, appearBtn){
-	let inputPosLeft = getRelativeCoords(input).left;
+	let inputPosLeft = getRelativeCoordsToFirstNonStaticParent(input).left;
 	let inputWidth = input.getBoundingClientRect().width;
 	let appearBtnWidth = appearBtn.getBoundingClientRect().width;
 
@@ -119,16 +120,44 @@ function initAppearBtnPosition(input, appearBtn){
 	appearBtn.style.left = (inputWidth + inputPosLeft) - appearBtnWidth + "px";
 }
 
+
+HIDDEN_WIDGET_CLASS = "emoji-widget--hidden";
+
+function isWidgetHidden(widget){
+	return widget.classList.contains(HIDDEN_WIDGET_CLASS);
+}
+
+function hideWidget(widget){
+	widget.classList.add(HIDDEN_WIDGET_CLASS);
+}
+
+function showWidget(widget){
+	widget.classList.remove(HIDDEN_WIDGET_CLASS);
+}
+
+function onAppearBtnClicked(e){
+	let id = e.target.parentElement.getAttribute("data-id");
+	let currWidget = document.getElementById(id);
+
+	if (isWidgetHidden(currWidget))
+		showWidget(currWidget);
+	else
+		hideWidget(currWidget);
+}
+
+
 function createWidget(inputDOM){
 	let widget = createDOMWidget();
 	let uniqueID = getUniqueID();
 	let appearBtn = createAppearBtn();
 
 	appearBtn.setAttribute("data-id", uniqueID);
+	appearBtn.addEventListener("click", onAppearBtnClicked);
 	inputDOM.setAttribute("data-id", uniqueID);
 	widget.setAttribute("id", uniqueID);
 	inputDOM.after(widget);
 	inputDOM.after(appearBtn);
+	hideWidget(widget);
 
 	initAppearBtnPosition(inputDOM, appearBtn);
 }
