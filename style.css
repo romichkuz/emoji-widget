@@ -51,7 +51,7 @@ h1 {
 }
 
 .emoji-widget__header,
-.emoji-widget__tabs {
+.emoji-widget__categories {
     padding-left: 25px;
     padding-right: 25px;
 }
@@ -93,18 +93,26 @@ h1 {
     cursor: pointer;
 }
 
-.emoji-widget__tabs {
+.emoji-widget__categories {
     display: flex;
     padding-top: 15px;
     padding-bottom: 15px;
     background: #202225;
 }
 
-.emoji-widget__tab {
+.emoji-widget__category,
+.emoji-widget__category svg {
     width: 40px;
     height: 40px;
-    background: red;
+}
+
+.emoji-widget__category {
     margin-right: 16px;
+    padding: 0;
+    outline: none;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
 }
 
 .emoji-widget__content {
@@ -118,8 +126,19 @@ h1 {
     margin: 0;
 }
 
-.emoji-widget__result {
-    margin-right: 15px;
+.emoji-widget__result:hover {
+    background: rgba(0,0,0,.5);
+}
+
+.emoji-widget__result button {
+    font-size: 16px;
+    width: auto;
+    height: auto;
+    padding: 8px;
+    background: transparent;
+    outline: none;
+    border: 0;
+    cursor: pointer;
 }
 
 
