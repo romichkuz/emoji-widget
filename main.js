@@ -145,7 +145,7 @@ function onAppearBtnClicked(e){
 
 function getEmojiDataFromDOM(emojiDOM){
 	return {
-		"html": emojiDOM.querySelector("button").innerText,
+		"emoji": emojiDOM.querySelector("button").innerText,
 		"name": emojiDOM.getAttribute("data-name"),
 		"category": emojiDOM.getAttribute("data-category"),
 		"description": emojiDOM.getAttribute("data-description")
@@ -159,7 +159,7 @@ function renderEmoji(emoji){
 			data-category="${emoji["category"]}"
 			data-description="${emoji["description"]}">
 			<button>
-				${emoji["html"]}
+				${emoji["emoji"]}
 			</button>
 		</li>`);
 }
@@ -176,15 +176,21 @@ function addEmojiToWidget(emoji, widget){
 function setEmojiAsCurrent(widget, emojiDOM){
 	let emojiData = getEmojiDataFromDOM(emojiDOM);
 
-	widget.querySelector(".emoji-widget__current-smile").innerHTML = emojiData["html"];
+	widget.querySelector(".emoji-widget__current-smile").innerHTML = emojiData["emoji"];
 	widget.querySelector(".emoji-widget__current-smile-name").innerHTML = emojiData["name"];
 }
 
 function addEmojiToText(inputDOM, emojiDOM){
 	let content = inputDOM.value;
+	let posToInsert = inputDOM.selectionStart;
+	let startStr = content.substring(0, posToInsert);
+	let endStr = content.substring(posToInsert);
 	let emojiData = getEmojiDataFromDOM(emojiDOM);
 
-	inputDOM.value = content + emojiData["html"];
+	inputDOM.value = startStr + emojiData["emoji"] + endStr;
+	inputDOM.selectionStart = posToInsert + emojiData["emoji"].length;
+	inputDOM.selectionEnd = posToInsert + emojiData["emoji"].length;
+	inputDOM.focus();
 }
 // END Emojies
 
