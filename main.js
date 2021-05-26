@@ -143,6 +143,15 @@ function onAppearBtnClicked(e){
 
 // Emojies 
 
+function getEmojiDataFromDOM(emojiDOM){
+	return {
+		"html": emojiDOM.querySelector("button").innerText,
+		"name": emojiDOM.getAttribute("data-name"),
+		"category": emojiDOM.getAttribute("data-category"),
+		"description": emojiDOM.getAttribute("data-description")
+	}
+}
+
 function renderEmoji(emoji){
 	return htmlToDOM(`
 		<li class="emoji-widget__result" 
@@ -164,18 +173,20 @@ function addEmojiToWidget(emoji, widget){
 	return emojiDOM;
 }
 
-// END Emojies
-
-
-// Showing current emoji
 function setEmojiAsCurrent(widget, emojiDOM){
-	let emojiName = emojiDOM.getAttribute("data-name");
-	let emojiSmile = emojiDOM.querySelector("button").innerText;
+	let emojiData = getEmojiDataFromDOM(emojiDOM);
 
-	widget.querySelector(".emoji-widget__current-smile").innerHTML = emojiSmile;
-	widget.querySelector(".emoji-widget__current-smile-name").innerHTML = emojiName;
+	widget.querySelector(".emoji-widget__current-smile").innerHTML = emojiData["html"];
+	widget.querySelector(".emoji-widget__current-smile-name").innerHTML = emojiData["name"];
 }
-// END Showing current emoji
+
+function addEmojiToText(inputDOM, emojiDOM){
+	let content = inputDOM.value;
+	let emojiData = getEmojiDataFromDOM(emojiDOM);
+
+	inputDOM.value = content + emojiData["html"];
+}
+// END Emojies
 
 // Widget
 function createDOMWidget(){
@@ -243,8 +254,13 @@ function createWidget(inputDOM){
 
 	for (const emoji of emojies){
 		let emojiDOM = addEmojiToWidget(emoji, widget);
+
 		emojiDOM.addEventListener("mouseover", function(e){
 			setEmojiAsCurrent(widget, emojiDOM);
+		});
+
+		emojiDOM.addEventListener("click", function(e){
+			addEmojiToText(inputDOM, emojiDOM);
 		});
 	}
 
