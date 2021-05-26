@@ -50,8 +50,7 @@ h1 {
     padding-bottom: 25px;
 }
 
-.emoji-widget__header,
-.emoji-widget__categories {
+.emoji-widget__header {
     padding-left: 25px;
     padding-right: 25px;
 }
@@ -95,24 +94,28 @@ h1 {
 
 .emoji-widget__categories {
     display: flex;
-    padding-top: 15px;
-    padding-bottom: 15px;
+    padding:  15px;
     background: #202225;
 }
 
-.emoji-widget__category,
 .emoji-widget__category svg {
-    width: 40px;
-    height: 40px;
+    width: 100%;
+    height: auto;
 }
 
+
 .emoji-widget__category {
-    margin-right: 16px;
-    padding: 0;
+    width: 60px;
+    padding: 15px;
     outline: none;
     border: 0;
     background: transparent;
     cursor: pointer;
+}
+
+.emoji-widget__category--active,
+.emoji-widget__category:hover {
+    background: rgba(255,255,255,.1);
 }
 
 .emoji-widget__content {
@@ -139,6 +142,10 @@ h1 {
     outline: none;
     border: 0;
     cursor: pointer;
+}
+
+.emoji-widget__result--hidden {
+    display: none;
 }
 
 
