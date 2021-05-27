@@ -293,36 +293,57 @@ function createWidgetStyles(){
 }
 
 const recentlyUsedEmojies = [];
+const categories = ["0", "1", "2"];
+const emojies = [
+	{
+		"emoji": "😂", 
+		"name": "face with tears of joy", 
+		"html": "&#128514;", 
+		"category": 1, 
+		"description": "face-smiling"
+	},
+	{
+		"emoji": "❤️", 
+		"name": "red heart", 
+		"html": "&#10084;", 
+		"category": 1, 
+		"description": "emotion"
+	},
+	{
+		"emoji": "❤️", 
+		"name": "red heart", 
+		"html": "&#10084;", 
+		"category": 2, 
+		"description": "emotion"
+	},
+];
+
+function searchEmojies(query){
+	return emojies.filter(emoji => emoji.name.indexOf(query) > -1);
+}
+
+function onSearchInputChange(input, widget, inputDOM){
+	let value = input.value;
+	if (value !== ""){
+		renderEmojies(searchEmojies(value), widget, inputDOM);
+	}
+}
+
+function initSearchInput(widget, inputDOM){
+	let input = document.querySelector(".emoji-widget__search-input");
+
+	input.addEventListener("input", function(e){
+		onSearchInputChange(input, widget, inputDOM);
+	});
+}
 
 function createWidget(inputDOM){
 	let widget = renderWidget();
 	let uniqueID = getUniqueID();
 	let appearBtn = renderAppearBtn();
-	const categories = ["0", "1", "2"];
-	const emojies = [
-		{
-			"emoji": "😂", 
-			"name": "face with tears of joy", 
-			"html": "&#128514;", 
-			"category": 1, 
-			"description": "face-smiling"
-		},
-    	{
-    		"emoji": "❤️", 
-    		"name": "red heart", 
-    		"html": "&#10084;", 
-    		"category": 1, 
-    		"description": "emotion"
-    	},
-    	{
-    		"emoji": "❤️", 
-    		"name": "red heart", 
-    		"html": "&#10084;", 
-    		"category": 2, 
-    		"description": "emotion"
-    	},
-    ];
 
+
+	// Init categories
 	for (const cat of categories){
 		let category = addCategoryToWidget(cat, widget);
 
@@ -343,7 +364,7 @@ function createWidget(inputDOM){
 		
 	}
 
-	renderEmojies(emojies, widget, inputDOM);
+	renderEmojies(emojies.filter(emoji => emoji["category"] == 1), widget, inputDOM);
 
 	appearBtn.setAttribute("data-id", uniqueID);
 	appearBtn.addEventListener("click", onAppearBtnClicked);
@@ -352,7 +373,7 @@ function createWidget(inputDOM){
 	inputDOM.after(widget);
 	inputDOM.after(appearBtn);
 	hideWidget(widget);
-
+	initSearchInput(widget, inputDOM);
 	initAppearBtnPosition(inputDOM, appearBtn);
 }
 
