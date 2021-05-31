@@ -430,48 +430,60 @@ class Widget {
 		</div>`);
 	}
 
+	renderAppearBtn(){
+		return htmlToDOM(`
+			<button 
+				style="padding: 0;
+						background: transparent;
+						outline: none;
+						border: 0;
+						height: 32px;
+						width: 32px;
+						cursor: pointer;">
+							<svg id="Layer_1" enable-background="new 0 0 512 512" viewBox="0 0 512 512" width="32" height="32" xmlns="http://www.w3.org/2000/svg">
+								<path d="m256 512c-68.38 0-132.667-26.629-181.02-74.98-48.351-48.353-74.98-112.64-74.98-181.02s26.629-132.667 74.98-181.02c48.353-48.351 112.64-74.98 181.02-74.98s132.667 26.629 181.02 74.98c48.351 48.353 74.98 112.64 74.98 181.02s-26.629 132.667-74.98 181.02c-48.353 48.351-112.64 74.98-181.02 74.98zm0-472c-119.103 0-216 96.897-216 216s96.897 216 216 216 216-96.897 216-216-96.897-216-216-216zm93.737 260.188c-9.319-5.931-21.681-3.184-27.61 6.136-.247.387-25.137 38.737-67.127 38.737s-66.88-38.35-67.127-38.737c-5.93-9.319-18.291-12.066-27.61-6.136s-12.066 18.292-6.136 27.61c1.488 2.338 37.172 57.263 100.873 57.263s99.385-54.924 100.873-57.263c5.93-9.319 3.183-21.68-6.136-27.61zm-181.737-135.188c13.807 0 25 11.193 25 25s-11.193 25-25 25-25-11.193-25-25 11.193-25 25-25zm150 25c0 13.807 11.193 25 25 25s25-11.193 25-25-11.193-25-25-25-25 11.193-25 25z"/>
+							</svg>
+			</button>`);
+	}
+
 	create(input) {
-		let inputDOM = input;
-		let widget = this.render();
-		let uniqueID = getUniqueID();
-		let appearBtn = renderAppearBtn();
 		this.input = input;
-		this.widget = widget;
-		this.id = uniqueID;
-		this.appearBtn = appearBtn;
+		this.widget = this.render();
+		this.id = getUniqueID();
+		this.appearBtn = this.renderAppearBtn();
 
 		// Init categories
 		for (const cat of categories){
-			let category = addCategoryToWidget(cat, widget);
+			let category = addCategoryToWidget(cat, this.widget);
 
-			if (cat === "0"){
-				category.addEventListener("click", function(e){
-					setActiveCategory(cat, widget);
-					renderEmojies(recentlyUsedEmojies, widget, inputDOM);
+			if (cat === "0"){                              
+				category.addEventListener("click", (e) =>{
+					setActiveCategory(cat, this.widget);
+					renderEmojies(recentlyUsedEmojies, this.widget, this.input);
 				});
 			} else {
-				category.addEventListener("click", function(e){
-					setActiveCategory(cat, widget);
+				category.addEventListener("click", (e) => {
+					setActiveCategory(cat, this.widget);
 					renderEmojies(
 						emojies.filter(emoji => emoji["category"].toString() === cat), 
-						widget,
-						inputDOM);
+						this.widget,
+						this.input);
 				});
 			}
 			
 		}
 
-		renderEmojies(emojies.filter(emoji => emoji["category"] == 1), widget, inputDOM);
+		renderEmojies(emojies.filter(emoji => emoji["category"] == 1), this.widget, this.input);
 
-		appearBtn.setAttribute("data-id", uniqueID);
-		appearBtn.addEventListener("click", onAppearBtnClicked);
-		inputDOM.setAttribute("data-id", uniqueID);
-		widget.setAttribute("id", uniqueID);
-		inputDOM.after(widget);
-		inputDOM.after(appearBtn);
-		hideWidget(widget);
-		initSearchInput(widget, inputDOM);
-		initAppearBtnPosition(inputDOM, appearBtn);
+		this.appearBtn.setAttribute("data-id", this.id);
+		this.appearBtn.addEventListener("click", onAppearBtnClicked);
+		this.input.setAttribute("data-id", this.id);
+		this.widget.setAttribute("id", this.id);
+		this.input.after(this.widget);
+		this.input.after(this.appearBtn);
+		hideWidget(this.widget);
+		initSearchInput(this.widget, this.input);
+		initAppearBtnPosition(this.input, this.appearBtn);
 	}
 }
 
