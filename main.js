@@ -29,6 +29,7 @@ function htmlToDOM(html){
 // END Utils
 
 
+// intersection api - подгрузка как в ленте в вк, поиск идет сразу в бд (не в DOM)
 
 // Categories
 
@@ -380,5 +381,101 @@ function createWidget(inputDOM){
 
 // END Widget
 
+// let a = document.querySelector('.test-input');
+// createWidget(a);
+
+
+
+
+
+class Widget {
+	constructor(){
+		this.input = null;
+		this.widget = null;
+		this.id = null;
+		this.appearBtn = null;
+		this.recentlyUsedEmojies = [];
+	}
+
+	render(){
+		return htmlToDOM(`
+		<div class="emoji-widget">
+			<form class="emoji-widget__header">
+				<label class="emoji-widget__search-bar">
+					<input type="text" class="emoji-widget__search-input" placeholder="Найдите крутой эмодзи">
+					<button class="emoji-widget__search-btn">
+						<svg 
+							width="20" 
+							height="20" 
+							viewBox="0 0 20 20" 
+							fill="none" 
+							xmlns="http://www.w3.org/2000/svg"
+							class="emoji-widget__search-input-icon">
+							<path fill-rule="evenodd" clip-rule="evenodd" d="M8 16C3.58172 16 0 12.4183 0 8C0 3.58172 3.58172 0 8 0C12.4183 0 16 3.58172 16 8C16 9.84871 15.3729 11.551 14.3199 12.9056L19.7071 18.2929L18.2929 19.7071L12.9056 14.3199C11.551 15.3729 9.84871 16 8 16ZM14 8C14 11.3137 11.3137 14 8 14C4.68629 14 2 11.3137 2 8C2 4.68629 4.68629 2 8 2C11.3137 2 14 4.68629 14 8Z" fill="#DAD8D8">
+							</path>
+						</svg>
+					</button>
+				</label>
+			</form>
+			<div class="emoji-widget__content">
+				<div class="emoji-widget__categories">
+				</div>
+				<ul class="emoji-widget__results">
+				</ul>
+			</div>
+			<div class="emoji-widget__footer">
+				<div class="emoji-widget__current-smile"></div>
+				<div class="emoji-widget__current-smile-name"></div>
+			</div>
+		</div>`);
+	}
+
+	create(input) {
+		let inputDOM = input;
+		let widget = this.render();
+		let uniqueID = getUniqueID();
+		let appearBtn = renderAppearBtn();
+		this.input = input;
+		this.widget = widget;
+		this.id = uniqueID;
+		this.appearBtn = appearBtn;
+
+		// Init categories
+		for (const cat of categories){
+			let category = addCategoryToWidget(cat, widget);
+
+			if (cat === "0"){
+				category.addEventListener("click", function(e){
+					setActiveCategory(cat, widget);
+					renderEmojies(recentlyUsedEmojies, widget, inputDOM);
+				});
+			} else {
+				category.addEventListener("click", function(e){
+					setActiveCategory(cat, widget);
+					renderEmojies(
+						emojies.filter(emoji => emoji["category"].toString() === cat), 
+						widget,
+						inputDOM);
+				});
+			}
+			
+		}
+
+		renderEmojies(emojies.filter(emoji => emoji["category"] == 1), widget, inputDOM);
+
+		appearBtn.setAttribute("data-id", uniqueID);
+		appearBtn.addEventListener("click", onAppearBtnClicked);
+		inputDOM.setAttribute("data-id", uniqueID);
+		widget.setAttribute("id", uniqueID);
+		inputDOM.after(widget);
+		inputDOM.after(appearBtn);
+		hideWidget(widget);
+		initSearchInput(widget, inputDOM);
+		initAppearBtnPosition(inputDOM, appearBtn);
+	}
+}
+
+
 let a = document.querySelector('.test-input');
-createWidget(a);
+let w = new Widget();
+w.create(a);
