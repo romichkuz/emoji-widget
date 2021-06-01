@@ -26,48 +26,6 @@ function htmlToDOM(html){
 	return div.firstChild;
 }
 
-// END Utils
-
-
-// intersection api - подгрузка как в ленте в вк, поиск идет сразу в бд (не в DOM)
-
-// Categories
-
-
-function renderCategory(category){
-	let categorySmile = htmlToDOM(CATEGORIES_VIEW[category]);
-	let btn = document.createElement("button");
-	btn.setAttribute("data-category", category);
-	btn.classList.add("emoji-widget__category");
-	btn.append(categorySmile);
-
-	return btn;
-}
-
-function addCategoryToWidget(category, widget){
-	let categoryDOM = renderCategory(category);
-
-	widget.querySelector(".emoji-widget__categories").append(categoryDOM);
-
-	return categoryDOM;
-}
-
-
-function setActiveCategory(category, widget){
-	let cats = widget.querySelectorAll(".emoji-widget__category");
-	let cat = widget.querySelector(`button[data-category="${category}"]`);
-
-	for (const cat of cats){
-		cat.classList.remove("emoji-widget__category--active");
-	}
-
-	cat.classList.add("emoji-widget__category--active");
-}
-// END Categories
-
-
-
-
 // TODO Rename methods according to input
 function getRelativeCoordsToFirstNonStaticParent(elem){
 	let elCoords = elem.getBoundingClientRect();
@@ -88,67 +46,6 @@ function getRelativeCoordsToFirstNonStaticParent(elem){
 	}
 }
 
-
-// AppearBtn
-function initAppearBtnPosition(input, appearBtn){
-	let inputPosLeft = getRelativeCoordsToFirstNonStaticParent(input).left;
-	let inputWidth = input.getBoundingClientRect().width;
-	let appearBtnWidth = appearBtn.getBoundingClientRect().width;
-
-	appearBtn.style.position = "absolute";
-	appearBtn.style.left = (inputWidth + inputPosLeft) - appearBtnWidth + "px";
-}
-
-function renderAppearBtn(){
-	return htmlToDOM(`
-		<button 
-			style="padding: 0;
-					background: transparent;
-					outline: none;
-					border: 0;
-					height: 32px;
-					width: 32px;
-					cursor: pointer;">
-						<svg id="Layer_1" enable-background="new 0 0 512 512" viewBox="0 0 512 512" width="32" height="32" xmlns="http://www.w3.org/2000/svg">
-							<path d="m256 512c-68.38 0-132.667-26.629-181.02-74.98-48.351-48.353-74.98-112.64-74.98-181.02s26.629-132.667 74.98-181.02c48.353-48.351 112.64-74.98 181.02-74.98s132.667 26.629 181.02 74.98c48.351 48.353 74.98 112.64 74.98 181.02s-26.629 132.667-74.98 181.02c-48.353 48.351-112.64 74.98-181.02 74.98zm0-472c-119.103 0-216 96.897-216 216s96.897 216 216 216 216-96.897 216-216-96.897-216-216-216zm93.737 260.188c-9.319-5.931-21.681-3.184-27.61 6.136-.247.387-25.137 38.737-67.127 38.737s-66.88-38.35-67.127-38.737c-5.93-9.319-18.291-12.066-27.61-6.136s-12.066 18.292-6.136 27.61c1.488 2.338 37.172 57.263 100.873 57.263s99.385-54.924 100.873-57.263c5.93-9.319 3.183-21.68-6.136-27.61zm-181.737-135.188c13.807 0 25 11.193 25 25s-11.193 25-25 25-25-11.193-25-25 11.193-25 25-25zm150 25c0 13.807 11.193 25 25 25s25-11.193 25-25-11.193-25-25-25-25 11.193-25 25z"/>
-						</svg>
-		</button>`);
-}
-
-// END AppearBtn
-
-// Show/Hide widget
-HIDDEN_WIDGET_CLASS = "emoji-widget--hidden";
-
-function isWidgetHidden(widget){
-	return widget.classList.contains(HIDDEN_WIDGET_CLASS);
-}
-
-function hideWidget(widget){
-	widget.classList.add(HIDDEN_WIDGET_CLASS);
-}
-
-function showWidget(widget){
-	widget.classList.remove(HIDDEN_WIDGET_CLASS);
-}
-
-function onAppearBtnClicked(e){
-	console.log(e);
-	let id = e.target.parentElement.getAttribute("data-id");
-	let currWidget = document.getElementById(id);
-
-	if (isWidgetHidden(currWidget))
-		showWidget(currWidget);
-	else
-		hideWidget(currWidget);
-}
-
-
-// END Show/Hide widget
-
-
-// Emojies 
-
 function getEmojiDataFromDOM(emojiDOM){
 	return {
 		"emoji": emojiDOM.querySelector("button").innerText,
@@ -158,74 +55,41 @@ function getEmojiDataFromDOM(emojiDOM){
 	}
 }
 
-function renderEmoji(emoji){
-	return htmlToDOM(`
-		<li class="emoji-widget__result" 
-			data-name="${emoji["name"]}"
-			data-category="${emoji["category"]}"
-			data-description="${emoji["description"]}">
-			<button>
-				${emoji["emoji"]}
-			</button>
-		</li>`);
+function searchEmojies(query){
+	return emojies.filter(emoji => emoji.name.indexOf(query) > -1);
 }
+// END Utils
 
-function addEmojiToWidget(emoji, widget){
-	let emojiesList = widget.querySelector(".emoji-widget__results");
-	let emojiDOM = renderEmoji(emoji);
 
-	emojiesList.append(emojiDOM);
+// intersection api - подгрузка как в ленте в вк, поиск идет сразу в бд (не в DOM)
 
-	return emojiDOM;
-}
 
-function setEmojiAsCurrent(widget, emojiDOM){
-	let emojiData = getEmojiDataFromDOM(emojiDOM);
+const categories = ["0", "1", "2"];
+const emojies = [
+	{
+		"emoji": "😂", 
+		"name": "face with tears of joy", 
+		"html": "&#128514;", 
+		"category": 1, 
+		"description": "face-smiling"
+	},
+	{
+		"emoji": "❤️", 
+		"name": "red heart", 
+		"html": "&#10084;", 
+		"category": 1, 
+		"description": "emotion"
+	},
+	{
+		"emoji": "❤️", 
+		"name": "red heart", 
+		"html": "&#10084;", 
+		"category": 2, 
+		"description": "emotion"
+	},
+];
 
-	widget.querySelector(".emoji-widget__current-smile").innerHTML = emojiData["emoji"];
-	widget.querySelector(".emoji-widget__current-smile-name").innerHTML = emojiData["name"];
-}
-
-function addEmojiToText(inputDOM, emojiDOM){
-	let content = inputDOM.value;
-	let posToInsert = inputDOM.selectionStart;
-	let startStr = content.substring(0, posToInsert);
-	let endStr = content.substring(posToInsert);
-	let emojiData = getEmojiDataFromDOM(emojiDOM);
-
-	inputDOM.value = startStr + emojiData["emoji"] + endStr;
-	inputDOM.selectionStart = posToInsert + emojiData["emoji"].length;
-	inputDOM.selectionEnd = posToInsert + emojiData["emoji"].length;
-	inputDOM.focus();
-}
-
-function renderEmojies(emojiesList, widget, inputDOM){
-	widget.querySelector(".emoji-widget__results").innerHTML = "";
-
-	for (const emoji of emojiesList){
-		let emojiDOM = addEmojiToWidget(emoji, widget);
-
-		emojiDOM.addEventListener("mouseover", function(e){
-			setEmojiAsCurrent(widget, emojiDOM);
-		});
-
-		emojiDOM.addEventListener("click", function(e){
-			addEmojiToText(inputDOM, emojiDOM);
-			addEmojiToRecentlyUsed(emoji);
-		});
-	}
-}
-
-function addEmojiToRecentlyUsed(emoji){
-	if (!recentlyUsedEmojies.includes(emoji))
-		recentlyUsedEmojies.unshift(emoji);
-}
-
-// END Emojies
-
-// Widget
-
-CATEGORIES_VIEW = {
+const CATEGORIES_VIEW = {
 	"-1": `<svg id="Capa_1" enable-background="new 0 0 443.294 443.294" height="512" viewBox="0 0 443.294 443.294" width="512" xmlns="http://www.w3.org/2000/svg">
 			<path d="m221.647 0c-122.214 0-221.647 99.433-221.647 221.647s99.433 221.647 221.647 221.647 221.647-99.433 221.647-221.647-99.433-221.647-221.647-221.647zm0 415.588c-106.941 0-193.941-87-193.941-193.941s87-193.941 193.941-193.941 193.941 87 193.941 193.941-87 193.941-193.941 193.941z"/>
 			<path d="m235.5 83.118h-27.706v144.265l87.176 87.176 19.589-19.589-79.059-79.059z"/>
@@ -255,138 +119,6 @@ CATEGORIES_VIEW = {
 			</g>
 		</svg>`
 }
-
-function renderWidget(){
-	return htmlToDOM(`
-		<div class="emoji-widget">
-			<form class="emoji-widget__header">
-				<label class="emoji-widget__search-bar">
-					<input type="text" class="emoji-widget__search-input" placeholder="Найдите крутой эмодзи">
-					<button class="emoji-widget__search-btn">
-						<svg 
-							width="20" 
-							height="20" 
-							viewBox="0 0 20 20" 
-							fill="none" 
-							xmlns="http://www.w3.org/2000/svg"
-							class="emoji-widget__search-input-icon">
-							<path fill-rule="evenodd" clip-rule="evenodd" d="M8 16C3.58172 16 0 12.4183 0 8C0 3.58172 3.58172 0 8 0C12.4183 0 16 3.58172 16 8C16 9.84871 15.3729 11.551 14.3199 12.9056L19.7071 18.2929L18.2929 19.7071L12.9056 14.3199C11.551 15.3729 9.84871 16 8 16ZM14 8C14 11.3137 11.3137 14 8 14C4.68629 14 2 11.3137 2 8C2 4.68629 4.68629 2 8 2C11.3137 2 14 4.68629 14 8Z" fill="#DAD8D8">
-							</path>
-						</svg>
-					</button>
-				</label>
-			</form>
-			<div class="emoji-widget__content">
-				<div class="emoji-widget__categories">
-				</div>
-				<ul class="emoji-widget__results">
-				</ul>
-			</div>
-			<div class="emoji-widget__footer">
-				<div class="emoji-widget__current-smile"></div>
-				<div class="emoji-widget__current-smile-name"></div>
-			</div>
-		</div>`);
-}
-
-function createWidgetStyles(){
-	return htmlToDOM(`<style>`);
-}
-
-const recentlyUsedEmojies = [];
-const categories = ["0", "1", "2"];
-const emojies = [
-	{
-		"emoji": "😂", 
-		"name": "face with tears of joy", 
-		"html": "&#128514;", 
-		"category": 1, 
-		"description": "face-smiling"
-	},
-	{
-		"emoji": "❤️", 
-		"name": "red heart", 
-		"html": "&#10084;", 
-		"category": 1, 
-		"description": "emotion"
-	},
-	{
-		"emoji": "❤️", 
-		"name": "red heart", 
-		"html": "&#10084;", 
-		"category": 2, 
-		"description": "emotion"
-	},
-];
-
-function searchEmojies(query){
-	return emojies.filter(emoji => emoji.name.indexOf(query) > -1);
-}
-
-function onSearchInputChange(input, widget, inputDOM){
-	let value = input.value;
-	if (value !== ""){
-		renderEmojies(searchEmojies(value), widget, inputDOM);
-	}
-}
-
-function initSearchInput(widget, inputDOM){
-	let input = document.querySelector(".emoji-widget__search-input");
-
-	input.addEventListener("input", function(e){
-		onSearchInputChange(input, widget, inputDOM);
-	});
-}
-
-function createWidget(inputDOM){
-	let widget = renderWidget();
-	let uniqueID = getUniqueID();
-	let appearBtn = renderAppearBtn();
-
-
-	// Init categories
-	for (const cat of categories){
-		let category = addCategoryToWidget(cat, widget);
-
-		if (cat === "0"){
-			category.addEventListener("click", function(e){
-				setActiveCategory(cat, widget);
-				renderEmojies(recentlyUsedEmojies, widget, inputDOM);
-			});
-		} else {
-			category.addEventListener("click", function(e){
-				setActiveCategory(cat, widget);
-				renderEmojies(
-					emojies.filter(emoji => emoji["category"].toString() === cat), 
-					widget,
-					inputDOM);
-			});
-		}
-		
-	}
-
-	renderEmojies(emojies.filter(emoji => emoji["category"] == 1), widget, inputDOM);
-
-	appearBtn.setAttribute("data-id", uniqueID);
-	appearBtn.addEventListener("click", onAppearBtnClicked);
-	inputDOM.setAttribute("data-id", uniqueID);
-	widget.setAttribute("id", uniqueID);
-	inputDOM.after(widget);
-	inputDOM.after(appearBtn);
-	hideWidget(widget);
-	initSearchInput(widget, inputDOM);
-	initAppearBtnPosition(inputDOM, appearBtn);
-}
-
-
-// END Widget
-
-// let a = document.querySelector('.test-input');
-// createWidget(a);
-
-
-
-
 
 class Widget {
 	constructor(){
@@ -430,6 +162,32 @@ class Widget {
 		</div>`);
 	}
 
+	renderCategory(category){
+		return htmlToDOM(
+				`<button class="emoji-widget__category" data-category="${category}">
+				${CATEGORIES_VIEW[category]}
+				</button>`);
+	}
+
+	addCategory(category){
+		let categoryDOM = this.renderCategory(category);
+
+		this.widget.querySelector(".emoji-widget__categories").append(categoryDOM);
+
+		return categoryDOM;
+	}
+
+	setActiveCategory(category){
+		let cats = this.widget.querySelectorAll(".emoji-widget__category");
+		let cat = this.widget.querySelector(`button[data-category="${category}"]`);
+
+		for (const cat of cats){
+			cat.classList.remove("emoji-widget__category--active");
+		}
+
+		cat.classList.add("emoji-widget__category--active");
+	}
+
 	renderAppearBtn(){
 		return htmlToDOM(`
 			<button 
@@ -446,44 +204,139 @@ class Widget {
 			</button>`);
 	}
 
+	renderEmoji(emoji){
+		return htmlToDOM(`
+			<li class="emoji-widget__result" 
+				data-name="${emoji["name"]}"
+				data-category="${emoji["category"]}"
+				data-description="${emoji["description"]}">
+				<button>
+					${emoji["emoji"]}
+				</button>
+			</li>`);
+	}
+
+
+	addEmojiToWidget(emoji){
+		let emojiesList = this.widget.querySelector(".emoji-widget__results");
+		let emojiDOM = this.renderEmoji(emoji);
+
+		emojiesList.append(emojiDOM);
+
+		return emojiDOM;
+	}
+
+	addEmojiToText(emoji){
+		let content = this.input.value;
+		let posToInsert = this.input.selectionStart;
+		let startStr = content.substring(0, posToInsert);
+		let endStr = content.substring(posToInsert);
+
+		this.input.value = startStr + emoji["emoji"] + endStr;
+		this.input.selectionStart = posToInsert + emoji["emoji"].length;
+		this.input.selectionEnd = posToInsert + emoji["emoji"].length;
+		this.input.focus();
+	}
+
+	addEmojiToRecentlyUsed(emoji){
+		if (!this.recentlyUsedEmojies.includes(emoji))
+			this.recentlyUsedEmojies.unshift(emoji);
+	}
+
+	setEmojiAsCurrent(emoji){
+		this.widget.querySelector(".emoji-widget__current-smile").innerHTML = emoji["emoji"];
+		this.widget.querySelector(".emoji-widget__current-smile-name").innerHTML = emoji["name"];
+	}
+
+	renderEmojies(emojiesList){
+		this.widget.querySelector(".emoji-widget__results").innerHTML = "";
+
+		for (const emoji of emojiesList){
+			let emojiDOM = this.addEmojiToWidget(emoji);
+
+			emojiDOM.addEventListener("mouseover", (e) => {
+				this.setEmojiAsCurrent(emoji);
+			});
+
+			emojiDOM.addEventListener("click", (e) => {
+				this.addEmojiToText(emoji);
+				this.addEmojiToRecentlyUsed(emoji);
+			});
+		}
+	}
+
+	isHidden(){
+		return this.widget.classList.contains("emoji-widget--hidden");
+	}
+
+	hide(){
+		this.widget.classList.add("emoji-widget--hidden");
+	}
+
+	show(){
+		this.widget.classList.remove("emoji-widget--hidden");
+	}
+
+	createAppearBtn(){
+		this.appearBtn = this.renderAppearBtn();
+		let inputPosLeft = getRelativeCoordsToFirstNonStaticParent(this.input).left;
+		let inputWidth = this.input.getBoundingClientRect().width;
+		let appearBtnWidth = this.appearBtn.getBoundingClientRect().width;
+
+		this.appearBtn.style.position = "absolute";
+		this.appearBtn.style.left = (inputWidth + inputPosLeft) - appearBtnWidth + "px";
+		this.appearBtn.setAttribute("data-id", this.id);
+		this.appearBtn.addEventListener("click", (e) => {
+			if (this.isHidden())
+				this.show();
+			else
+				this.hide();
+		});
+	}
+
+	initSearchEmojiesInput(){
+		let input = document.querySelector(".emoji-widget__search-input");
+
+		input.addEventListener("input", (e) => {
+			let value = input.value;
+			if (value !== ""){
+				this.renderEmojies(searchEmojies(value));
+			}
+		});
+	}
+
 	create(input) {
 		this.input = input;
 		this.widget = this.render();
 		this.id = getUniqueID();
-		this.appearBtn = this.renderAppearBtn();
+		this.createAppearBtn();
 
 		// Init categories
 		for (const cat of categories){
-			let category = addCategoryToWidget(cat, this.widget);
+			let category = this.addCategory(cat);
 
 			if (cat === "0"){                              
 				category.addEventListener("click", (e) =>{
-					setActiveCategory(cat, this.widget);
-					renderEmojies(recentlyUsedEmojies, this.widget, this.input);
+					this.setActiveCategory(cat);
+					this.renderEmojies(this.recentlyUsedEmojies);
 				});
 			} else {
 				category.addEventListener("click", (e) => {
-					setActiveCategory(cat, this.widget);
-					renderEmojies(
-						emojies.filter(emoji => emoji["category"].toString() === cat), 
-						this.widget,
-						this.input);
+					this.setActiveCategory(cat);
+					this.renderEmojies(
+						emojies.filter(emoji => emoji["category"].toString() === cat));
 				});
 			}
 			
 		}
 
-		renderEmojies(emojies.filter(emoji => emoji["category"] == 1), this.widget, this.input);
-
-		this.appearBtn.setAttribute("data-id", this.id);
-		this.appearBtn.addEventListener("click", onAppearBtnClicked);
+		this.renderEmojies(emojies.filter(emoji => emoji["category"] == 1));
 		this.input.setAttribute("data-id", this.id);
 		this.widget.setAttribute("id", this.id);
 		this.input.after(this.widget);
 		this.input.after(this.appearBtn);
-		hideWidget(this.widget);
-		initSearchInput(this.widget, this.input);
-		initAppearBtnPosition(this.input, this.appearBtn);
+		this.hide();
+		this.initSearchEmojiesInput();
 	}
 }
 
