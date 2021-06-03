@@ -124,6 +124,7 @@ h1 {
 
 .emoji-widget__results {
     display: flex;
+    flex-wrap: wrap;
     list-style: none;
     padding: 25px;
     margin: 0;

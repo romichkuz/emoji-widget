@@ -33,13 +33,11 @@ app.get('/get_emojies', (req, res) => {
 	res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE'); // If needed
 	res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type'); // If needed
 	res.setHeader('Access-Control-Allow-Credentials', true); // If needed
-	collection.find({ $text: { $search: req.query.q }}, (err, res) => {
-    	res.toArray().then((res) => {
-    		console.log(res);
+	collection.find({ $text: { $search: req.query.q }}, (err, resEmojies) => {
+    	resEmojies.toArray().then((emojies) => {
+    		res.send(emojies);
     	});
     });
-
-	res.send("New");
 });
 
 

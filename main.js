@@ -56,6 +56,7 @@ function getEmojiDataFromDOM(emojiDOM){
 }
 
 function searchEmojies(query){
+
 	return emojies.filter(emoji => emoji.name.indexOf(query) > -1);
 }
 // END Utils
@@ -90,10 +91,6 @@ const emojies = [
 ];
 
 const CATEGORIES_VIEW = {
-	"-1": `<svg id="Capa_1" enable-background="new 0 0 443.294 443.294" height="512" viewBox="0 0 443.294 443.294" width="512" xmlns="http://www.w3.org/2000/svg">
-			<path d="m221.647 0c-122.214 0-221.647 99.433-221.647 221.647s99.433 221.647 221.647 221.647 221.647-99.433 221.647-221.647-99.433-221.647-221.647-221.647zm0 415.588c-106.941 0-193.941-87-193.941-193.941s87-193.941 193.941-193.941 193.941 87 193.941 193.941-87 193.941-193.941 193.941z"/>
-			<path d="m235.5 83.118h-27.706v144.265l87.176 87.176 19.589-19.589-79.059-79.059z"/>
-		</svg>`,
 	"0":`<svg id="Layer_1" enable-background="new 0 0 512 512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" class="tab-icon">
 			<g>
 				<path d="m256 0c-141.159 0-256 114.841-256 256s114.841 256 256 256 256-114.841 256-256-114.841-256-256-256zm0 482c-124.617 0-226-101.383-226-226s101.383-226 226-226 226 101.383 226 226-101.383 226-226 226z"></path>
@@ -120,6 +117,9 @@ const CATEGORIES_VIEW = {
 		</svg>`
 }
 
+
+// Вынести значения в константы, например дефолтная категория
+
 class Widget {
 	constructor(){
 		this.input = null;
@@ -127,6 +127,7 @@ class Widget {
 		this.id = null;
 		this.appearBtn = null;
 		this.recentlyUsedEmojies = [];
+		this.currentCategory = "0";
 	}
 
 	render(){
@@ -180,6 +181,7 @@ class Widget {
 	setActiveCategory(category){
 		let cats = this.widget.querySelectorAll(".emoji-widget__category");
 		let cat = this.widget.querySelector(`button[data-category="${category}"]`);
+		this.currentCategory = category.toString();
 
 		for (const cat of cats){
 			cat.classList.remove("emoji-widget__category--active");
@@ -299,8 +301,20 @@ class Widget {
 
 		input.addEventListener("input", (e) => {
 			let value = input.value;
-			if (value !== ""){
-				this.renderEmojies(searchEmojies(value));
+
+			if (value !== "") {
+				fetch("http://localhost:3000/get_emojies?q=" + value)
+				.then(response => response.json())
+				.then(emojies => this.renderEmojies(emojies));
+			}
+			else {
+				let emojiesToShow = this.recentlyUsedEmojies;
+				if (this.currentCategory !== "0") {
+					emojiesToShow = emojies
+						.filter(emoji => emoji["category"].toString() === this.currentCategory);
+				}
+
+				this.renderEmojies(emojiesToShow);
 			}
 		});
 	}
@@ -330,7 +344,7 @@ class Widget {
 			
 		}
 
-		this.renderEmojies(emojies.filter(emoji => emoji["category"] == 1));
+		this.setActiveCategory(this.currentCategory);
 		this.input.setAttribute("data-id", this.id);
 		this.widget.setAttribute("id", this.id);
 		this.input.after(this.widget);
