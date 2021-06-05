@@ -66,29 +66,7 @@ function searchEmojies(query){
 
 
 const categories = ["0", "1", "2"];
-const emojies = [
-	{
-		"emoji": "😂", 
-		"name": "face with tears of joy", 
-		"html": "&#128514;", 
-		"category": 1, 
-		"description": "face-smiling"
-	},
-	{
-		"emoji": "❤️", 
-		"name": "red heart", 
-		"html": "&#10084;", 
-		"category": 1, 
-		"description": "emotion"
-	},
-	{
-		"emoji": "❤️", 
-		"name": "red heart", 
-		"html": "&#10084;", 
-		"category": 2, 
-		"description": "emotion"
-	},
-];
+let emojies = [];
 
 const CATEGORIES_VIEW = {
 	"0":`<svg id="Layer_1" enable-background="new 0 0 512 512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" class="tab-icon">
@@ -267,6 +245,21 @@ class Widget {
 		}
 	}
 
+	addEmojiesToWidget(emojiesList){
+		for (const emoji of emojiesList){
+			let emojiDOM = this.addEmojiToWidget(emoji);
+
+			emojiDOM.addEventListener("mouseover", (e) => {
+				this.setEmojiAsCurrent(emoji);
+			});
+
+			emojiDOM.addEventListener("click", (e) => {
+				this.addEmojiToText(emoji);
+				this.addEmojiToRecentlyUsed(emoji);
+			});
+		}
+	}
+
 	isHidden(){
 		return this.widget.classList.contains("emoji-widget--hidden");
 	}
@@ -319,6 +312,38 @@ class Widget {
 		});
 	}
 
+
+	getEmojiesByCategory(category, limit, offset) {
+		return fetch(`http://localhost:3000/get_emojies?
+						category=${category}&
+						limit=${limit}&
+						offset=${offset}`)
+				.then(response => response.json());
+	}
+
+	initLoadingResults() {
+		let results = this.widget.querySelector(".emoji-widget__results");
+
+		results.addEventListener("scroll", e => {
+			if (this.currentCategory === "0")
+				return;
+			
+			let emojiesCount = emojies
+				.filter(emoji => emoji.category.toString() === this.currentCategory)
+				.length;	
+			let isEnd = results.offsetHeight + results.scrollTop >= results.scrollHeight;
+
+			if (isEnd){
+				this.getEmojiesByCategory(this.currentCategory, 36, emojiesCount)
+					.then(resEmojies => {
+						emojies = emojies.concat(resEmojies);
+						this.addEmojiesToWidget(resEmojies);
+					});
+			}			
+		});
+	}
+
+
 	create(input) {
 		this.input = input;
 		this.widget = this.render();
@@ -328,6 +353,12 @@ class Widget {
 		// Init categories
 		for (const cat of categories){
 			let category = this.addCategory(cat);
+
+			// TODO: Create widget after loading emojies
+			this.getEmojiesByCategory(cat, 36, 0)
+				.then(function(resEmojies) {
+					emojies = emojies.concat(resEmojies);
+				});
 
 			if (cat === "0"){                              
 				category.addEventListener("click", (e) =>{
@@ -341,9 +372,9 @@ class Widget {
 						emojies.filter(emoji => emoji["category"].toString() === cat));
 				});
 			}
-			
 		}
 
+		this.initLoadingResults();
 		this.setActiveCategory(this.currentCategory);
 		this.input.setAttribute("data-id", this.id);
 		this.widget.setAttribute("id", this.id);

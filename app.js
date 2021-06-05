@@ -23,21 +23,37 @@ mongoClient.connect(function(err, client){
     	});
     });
 
+
+
     app.listen(port, function(){
         console.log("Сервер ожидает подключения...");
     });
 });
 
+// 36
 app.get('/get_emojies', (req, res) => {
 	res.setHeader('Access-Control-Allow-Origin', '*');
 	res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE'); // If needed
 	res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type'); // If needed
 	res.setHeader('Access-Control-Allow-Credentials', true); // If needed
-	collection.find({ $text: { $search: req.query.q }}, (err, resEmojies) => {
-    	resEmojies.toArray().then((emojies) => {
-    		res.send(emojies);
-    	});
-    });
+
+	if (req.query.category) {
+	    collection
+	    	.find( {category: parseInt(req.query.category)} )
+	    	.sort( {_id: 1} )
+	    	.skip( parseInt(req.query.offset) )
+	    	.limit( parseInt(req.query.limit) )
+	    	.toArray()
+	    	.then(emojies => {
+	    		res.send(emojies);
+	    	});
+	} else {
+		collection.find({ $text: { $search: req.query.q }}, (err, resEmojies) => {
+	    	resEmojies.toArray().then((emojies) => {
+	    		res.send(emojies);
+	    	});
+	    });	
+	}
 });
 
 
