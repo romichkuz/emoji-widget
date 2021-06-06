@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const port = 3000;
+const port = 3032;
 const MongoClient = require("mongodb").MongoClient;
 const uri = "mongodb+srv://mongo:mongo@emojisdb.6iax4.mongodb.net/emojisdb?retryWrites=true&w=majority";
 const mongoClient = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -26,7 +26,8 @@ mongoClient.connect(function(err, client){
 
 
     app.listen(port, function(){
-        console.log("Сервер ожидает подключения...");
+
+        console.log(`${port}`);
     });
 });
 
