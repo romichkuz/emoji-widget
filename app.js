@@ -9,7 +9,7 @@ let dbClient;
 let collection;
 
 app.get('/', (req, res) => {
-  res.send('Hello World!')
+  res.send('Hello World!');
 });
 
 mongoClient.connect(function(err, client){

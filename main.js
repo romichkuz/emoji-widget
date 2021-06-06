@@ -177,6 +177,7 @@ class Widget {
 		this.currentCategory = "0";
 		this.showingResults = false;
 		this.isDarkTheme = true;
+		this.url = "http://127.0.0.1:3000";
 	}
 
 	render(){
@@ -426,7 +427,7 @@ class Widget {
 	}
 
 	renderSearchedEmojies(query){
-		fetch("http://localhost:3000/get_emojies?q=" + query)
+		fetch(this.url + "/get_emojies?q=" + query)
 			.then(response => response.json())
 			.then(emojies => this.renderEmojies(emojies));
 	}
@@ -459,7 +460,7 @@ class Widget {
 	}
 
 	getEmojiesByCategory(category, limit, offset) {
-		return fetch(`http://localhost:3000/get_emojies?
+		return fetch(`${this.url}/get_emojies?
 						category=${category}&
 						limit=${limit}&
 						offset=${offset}`)
