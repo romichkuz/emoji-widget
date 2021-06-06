@@ -177,7 +177,7 @@ class Widget {
 		this.currentCategory = "0";
 		this.showingResults = false;
 		this.isDarkTheme = true;
-		this.url = "http://127.0.0.1:3000";
+		this.url = "http://185.244.219.96/emojis/";
 	}
 
 	render(){
