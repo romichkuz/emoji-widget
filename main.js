@@ -37,9 +37,7 @@ function getCoords(elem) {
 	};
 }
 
-// TODO Rename methods according to input
-function getRelativeCoordsToFirstNonStaticParent(elem){
-	let elCoords = getCoords(elem);
+function getNonStaticParent(elem){
 	let parent = elem.parentElement;
 
 	while (parent){
@@ -50,6 +48,13 @@ function getRelativeCoordsToFirstNonStaticParent(elem){
 
 		parent = parent.parentElement;
 	}
+
+	return parent;
+}
+
+function getRelativeCoordsToFirstNonStaticParent(elem){
+	let elCoords = getCoords(elem);
+	let parent = getNonStaticParent(elem);
 
 	let parentCoords = getCoords(parent);
 
@@ -312,6 +317,35 @@ class Widget {
 			(inputRect.height + inputPos.top) - appearBtnRect.height + "px";
 	}
 
+	initPositionAndSize(){
+		let inputPos = getRelativeCoordsToFirstNonStaticParent(this.input);
+		let inputRect = this.input.getBoundingClientRect();
+		let widgetRect = this.widget.getBoundingClientRect();
+		let isMobile = widgetRect.right > document.documentElement.clientWidth;
+		let isAttachedToLeftSide 
+			= (inputPos.left + inputRect.width) - widgetRect.width < 0;
+		let leftPos = isAttachedToLeftSide 
+			? inputPos.left 
+			: (inputPos.left + inputRect.width) - widgetRect.width;
+		let topPos = inputPos.top + inputRect.height + 5;
+
+		if (isMobile) {
+			let parentRect = getNonStaticParent(this.widget).getBoundingClientRect();
+			const padding = 15;
+
+			if (parentRect.left < padding) {
+				leftPos = padding - parentRect.left;
+			} else {
+				leftPos = -(parentRect.left - padding);
+			}
+
+			this.widget.style.width = `calc(100% - ${padding * 2}px)`;
+		}
+		console.log(leftPos);
+		this.widget.style.left = leftPos + "px";
+		this.widget.style.top = topPos + "px";
+	}
+
 	renderSearchedEmojies(query){
 		fetch("http://localhost:3000/get_emojies?q=" + query)
 			.then(response => response.json())
@@ -350,7 +384,6 @@ class Widget {
 			}
 		});
 	}
-
 
 	getEmojiesByCategory(category, limit, offset) {
 		return fetch(`http://localhost:3000/get_emojies?
@@ -419,6 +452,7 @@ class Widget {
 		this.widget.setAttribute("id", this.id);
 		this.input.after(this.widget);
 		this.input.after(this.appearBtn);
+		this.initPositionAndSize();
 		this.hide();
 		this.initSearchArea();
 		this.initAppearBtn();
