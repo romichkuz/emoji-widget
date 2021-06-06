@@ -26,9 +26,20 @@ function htmlToDOM(html){
 	return div.firstChild;
 }
 
+
+// получаем координаты элемента в контексте документа
+function getCoords(elem) {
+	let box = elem.getBoundingClientRect();
+
+	return {
+		top: box.top + pageYOffset,
+		left: box.left + pageXOffset
+	};
+}
+
 // TODO Rename methods according to input
 function getRelativeCoordsToFirstNonStaticParent(elem){
-	let elCoords = elem.getBoundingClientRect();
+	let elCoords = getCoords(elem);
 	let parent = elem.parentElement;
 
 	while (parent){
@@ -40,23 +51,15 @@ function getRelativeCoordsToFirstNonStaticParent(elem){
 		parent = parent.parentElement;
 	}
 
-	let parentCoords = parent.getBoundingClientRect();
-	return {
-		left: elCoords.left - parentCoords.left
-	}
-}
+	let parentCoords = getCoords(parent);
 
-function getEmojiDataFromDOM(emojiDOM){
 	return {
-		"emoji": emojiDOM.querySelector("button").innerText,
-		"name": emojiDOM.getAttribute("data-name"),
-		"category": emojiDOM.getAttribute("data-category"),
-		"description": emojiDOM.getAttribute("data-description")
+		left: elCoords.left - parentCoords.left,
+		top: elCoords.top - parentCoords.top
 	}
 }
 
 function searchEmojies(query){
-
 	return emojies.filter(emoji => emoji.name.indexOf(query) > -1);
 }
 // END Utils
@@ -97,6 +100,7 @@ const CATEGORIES_VIEW = {
 
 
 // Вынести значения в константы, например дефолтная категория
+// Сделать статическую переменную с эмоджи
 
 class Widget {
 	constructor(){
@@ -106,6 +110,7 @@ class Widget {
 		this.appearBtn = null;
 		this.recentlyUsedEmojies = [];
 		this.currentCategory = "0";
+		this.showingResults = false;
 	}
 
 	render(){
@@ -171,12 +176,14 @@ class Widget {
 	renderAppearBtn(){
 		return htmlToDOM(`
 			<button 
+				class="emoji-widget__toggler"
 				style="padding: 0;
 						background: transparent;
 						outline: none;
+						width: 30px;
+						height: 30px;
 						border: 0;
-						height: 32px;
-						width: 32px;
+						position: absolute;
 						cursor: pointer;">
 							<svg id="Layer_1" enable-background="new 0 0 512 512" viewBox="0 0 512 512" width="32" height="32" xmlns="http://www.w3.org/2000/svg">
 								<path d="m256 512c-68.38 0-132.667-26.629-181.02-74.98-48.351-48.353-74.98-112.64-74.98-181.02s26.629-132.667 74.98-181.02c48.353-48.351 112.64-74.98 181.02-74.98s132.667 26.629 181.02 74.98c48.351 48.353 74.98 112.64 74.98 181.02s-26.629 132.667-74.98 181.02c-48.353 48.351-112.64 74.98-181.02 74.98zm0-472c-119.103 0-216 96.897-216 216s96.897 216 216 216 216-96.897 216-216-96.897-216-216-216zm93.737 260.188c-9.319-5.931-21.681-3.184-27.61 6.136-.247.387-25.137 38.737-67.127 38.737s-66.88-38.35-67.127-38.737c-5.93-9.319-18.291-12.066-27.61-6.136s-12.066 18.292-6.136 27.61c1.488 2.338 37.172 57.263 100.873 57.263s99.385-54.924 100.873-57.263c5.93-9.319 3.183-21.68-6.136-27.61zm-181.737-135.188c13.807 0 25 11.193 25 25s-11.193 25-25 25-25-11.193-25-25 11.193-25 25-25zm150 25c0 13.807 11.193 25 25 25s25-11.193 25-25-11.193-25-25-25-25 11.193-25 25z"/>
@@ -273,41 +280,73 @@ class Widget {
 	}
 
 	createAppearBtn(){
-		this.appearBtn = this.renderAppearBtn();
-		let inputPosLeft = getRelativeCoordsToFirstNonStaticParent(this.input).left;
-		let inputWidth = this.input.getBoundingClientRect().width;
-		let appearBtnWidth = this.appearBtn.getBoundingClientRect().width;
-
-		this.appearBtn.style.position = "absolute";
-		this.appearBtn.style.left = (inputWidth + inputPosLeft) - appearBtnWidth + "px";
-		this.appearBtn.setAttribute("data-id", this.id);
-		this.appearBtn.addEventListener("click", (e) => {
+		let appearBtn = this.renderAppearBtn();
+		
+		appearBtn.setAttribute("data-id", this.id);
+		appearBtn.addEventListener("click", (e) => {
 			if (this.isHidden())
 				this.show();
 			else
 				this.hide();
 		});
+
+		return appearBtn;
 	}
 
-	initSearchEmojiesInput(){
+	initAppearBtn(){
+		let inputPos = getRelativeCoordsToFirstNonStaticParent(this.input);
+		let inputRect = this.input.getBoundingClientRect();
+		let appearBtnWidth = this.appearBtn.getBoundingClientRect().width;
+		const defaultAppearBtnSize = 30;
+
+		if (inputRect.height < defaultAppearBtnSize){
+			this.appearBtn.style.width = inputRect.height - 2 + "px";
+			this.appearBtn.style.height = inputRect.height - 2 + "px";
+		}
+
+		let appearBtnRect = this.appearBtn.getBoundingClientRect();
+
+		this.appearBtn.style.left = 
+			(inputRect.width + inputPos.left) - appearBtnRect.width  + "px";
+		this.appearBtn.style.top = 
+			(inputRect.height + inputPos.top) - appearBtnRect.height + "px";
+	}
+
+	renderSearchedEmojies(query){
+		fetch("http://localhost:3000/get_emojies?q=" + query)
+			.then(response => response.json())
+			.then(emojies => this.renderEmojies(emojies));
+	}
+
+	initSearchArea(){
 		let input = document.querySelector(".emoji-widget__search-input");
+		let searchBtn = document.querySelector(".emoji-widget__search-btn");
 
 		input.addEventListener("input", (e) => {
-			let value = input.value;
-
-			if (value !== "") {
-				fetch("http://localhost:3000/get_emojies?q=" + value)
-				.then(response => response.json())
-				.then(emojies => this.renderEmojies(emojies));
+			if (input.value !== "") {
+				this.showingResults = true;
+				this.renderSearchedEmojies(input.value);
 			}
 			else {
 				let emojiesToShow = this.recentlyUsedEmojies;
+				this.showingResults = false;
 				if (this.currentCategory !== "0") {
 					emojiesToShow = emojies
 						.filter(emoji => emoji["category"].toString() === this.currentCategory);
 				}
 
 				this.renderEmojies(emojiesToShow);
+			}
+		});
+
+		searchBtn.addEventListener("click", (e) => {
+			e.preventDefault();
+			if (input.value !== "") {
+				this.renderSearchedEmojies(input.value);
+				this.showingResults = true;
+			}
+			else {
+				this.showingResults = false;
 			}
 		});
 	}
@@ -325,13 +364,13 @@ class Widget {
 		let results = this.widget.querySelector(".emoji-widget__results");
 
 		results.addEventListener("scroll", e => {
-			if (this.currentCategory === "0")
+			if (this.currentCategory === "0" || this.showingResults)
 				return;
-			
+
 			let emojiesCount = emojies
 				.filter(emoji => emoji.category.toString() === this.currentCategory)
 				.length;	
-			let isEnd = results.offsetHeight + results.scrollTop >= results.scrollHeight;
+			let isEnd = results.offsetHeight + results.scrollTop >= results.scrollHeight - 1;
 
 			if (isEnd){
 				this.getEmojiesByCategory(this.currentCategory, 36, emojiesCount)
@@ -348,7 +387,7 @@ class Widget {
 		this.input = input;
 		this.widget = this.render();
 		this.id = getUniqueID();
-		this.createAppearBtn();
+		this.appearBtn = this.createAppearBtn();
 
 		// Init categories
 		for (const cat of categories){
@@ -381,7 +420,8 @@ class Widget {
 		this.input.after(this.widget);
 		this.input.after(this.appearBtn);
 		this.hide();
-		this.initSearchEmojiesInput();
+		this.initSearchArea();
+		this.initAppearBtn();
 	}
 }
 

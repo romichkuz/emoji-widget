@@ -125,11 +125,16 @@ h1 {
 .emoji-widget__results {
     display: flex;
     flex-wrap: wrap;
+    align-items: flex-start;
     list-style: none;
     padding: 25px;
     margin: 0;
     height: 180px;
     overflow-y: scroll;
+}
+
+.emoji-widget__result {
+    width: 11%;
 }
 
 .emoji-widget__result:hover {
@@ -169,8 +174,13 @@ h1 {
     align-items: center;
     background: #202225;
     min-height: 44px;
-    padding: 15px 25px;
+    padding: 25px;
     justify-self: flex-end;
     width: 100%;
     border-radius: 0 0 10px 10px;
+}
+
+.emoji-widget__toggler svg {
+    width: 100%;
+    height: 100%;
 }
