@@ -26,7 +26,8 @@ mongoClient.connect(function(err, client){
 
 
     app.listen(port, function(){
-        console.log("Сервер ожидает подключения...");
+
+        console.log(`${port}`);
     });
 });
 
