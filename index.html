@@ -3,21 +3,54 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Document</title>
+	<title>Emoji widget</title>
+	<style>
+		body {
+			text-align: center;
+			font-family: Arial, sans-serif;
+		}
+
+		.test-input {
+			display: inline-block;
+			width:  800px;
+			height: 90px;
+			margin: 0 auto;
+		}
+
+		.code {
+			font-size: 20px;
+			background: #f6f6f6;
+		}
+		.code code {
+			display: inline-block;
+			text-align: left;
+			margin: 0 auto;
+		}
+	</style>
 </head>
-<body style="padding: 30px;">
-	<h1>Emoji widget</h1>
-	<input type="text" class="test-input">
-	<input type="text" class="test-input2">
-	<script src="main.js"></script>
+<body>
+	<textarea class="test-input"></textarea> 
+	<h1>Как подключить?</h1>
+	<div class="code">
+		<code>
+			<pre>
+&lt;script src="http://185.244.219.96/emoji-widget/main.js"&gt;&lt;/script&gt;
+&lt;script defer&gt;
+	window.addEventListener("load", function(event) { 
+		let a = document.querySelector('.test-input');
+		let w = new Widget();
+		w.create(a);
+	});
+&lt;/script&gt;
+			</pre>
+		</code>
+	</div>
+	<script src="http://185.244.219.96/emoji-widget/main.js"></script>
 	<script defer>
 		window.addEventListener("load", function(event) { 
 			let a = document.querySelector('.test-input');
-			let b = document.querySelector(".test-input2");
-			let w2 = new Widget();
 			let w = new Widget();
 			w.create(a);
-			w2.create(b);
 		});
 	</script>
 </body>

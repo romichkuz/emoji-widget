@@ -2,38 +2,12 @@
     box-sizing: border-box;
 }
 
-body{
-    background-color: #36393f;
-}
-h1 {
-    color: #b9bbbe;
-}
-.smileLogo{
-    background-color: #40444b;
-    width: 44px;
-    height: 44px;
-}
-.chat button{
-    padding: 0;
-    border: none;
-}
-.chat input{
-    color: #dcddde;
-    background-color: #40444b;
-    height: 44px;
-    padding: 0 2px;
-    width: 60%;
-    min-width: 100px;
-}
-.chat{
-    display: flex;
-}
-
 
 
 @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
 
 .emoji-widget {
+    text-align: left;
     display: flex;
     flex-direction: column;
     width: 400px;
