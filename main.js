@@ -500,6 +500,16 @@ class Widget {
 		});
 	}
 
+	initStyles(callback){
+		let link = document.createElement("link");
+		link.rel  = "stylesheet";
+	    link.type = "text/css";
+	    link.href = "http://185.244.219.96/emoji-widget/style.css";
+
+	    link.addEventListener("load", callback);
+	    document.head.append(link);
+	}
+
 	create(input) {
 		this.input = input;
 		this.widget = this.render();
@@ -531,24 +541,19 @@ class Widget {
 			}
 		}
 
-		this.initLoadingResults();
-		this.setActiveCategory(this.currentCategory);
-		this.input.setAttribute("data-id", this.id);
-		this.widget.setAttribute("id", this.id);
-		this.input.after(this.widget);
-		this.input.after(this.appearBtn);
-		this.initPositionAndSize();
-		this.hide();
-		this.initSearchArea();
-		this.initAppearBtn();
-		this.initThemeSwitcher();
+		this.initStyles((e) => {
+			this.initLoadingResults();
+			this.setActiveCategory(this.currentCategory);
+			this.input.setAttribute("data-id", this.id);
+			this.widget.setAttribute("id", this.id);
+			this.input.after(this.widget);
+			this.input.after(this.appearBtn);
+			this.initPositionAndSize();
+			this.hide();
+			this.initSearchArea();
+			this.initAppearBtn();
+			this.initThemeSwitcher();
+		});
 	}
 }
 
-
-let a = document.querySelector('.test-input');
-let b = document.querySelector(".test-input2");
-let w2 = new Widget();
-let w = new Widget();
-w.create(a);
-w2.create(b);

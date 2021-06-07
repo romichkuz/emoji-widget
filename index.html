@@ -4,12 +4,21 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Document</title>
-	<link rel="stylesheet" href="style.css">
 </head>
 <body style="padding: 30px;">
 	<h1>Emoji widget</h1>
 	<input type="text" class="test-input">
 	<input type="text" class="test-input2">
 	<script src="main.js"></script>
+	<script defer>
+		window.addEventListener("load", function(event) { 
+			let a = document.querySelector('.test-input');
+			let b = document.querySelector(".test-input2");
+			let w2 = new Widget();
+			let w = new Widget();
+			w.create(a);
+			w2.create(b);
+		});
+	</script>
 </body>
 </html>
